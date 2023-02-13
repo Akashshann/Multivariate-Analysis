@@ -1,0 +1,36 @@
+library(readr)
+sparrows <- read_csv("/Users/akashshanmugam/Documents/MVA/Bumpus_sparrows.csv")
+str(sparrows)
+strboxplot(sparrows[,2:6])
+stars(sparrows,labels = sparrows$Survivorship)
+
+
+#ggplot 
+
+ggplot(Bumpus_sparrows, aes(x=Total_length,y=L_beak_head,color= Survivorship)) + geom_point()
+ggplot(Bumpus_sparrows, aes(x=Alar_extent,y=L_beak_head,color= Survivorship)) + geom_point()
+
+# box plot
+ggplot(Bumpus_sparrows, aes(x=Survivorship,y=Total_length))+ geom_boxplot(fill='blue')
+ggplot(Bumpus_sparrows, aes(x=Survivorship,y=Alar_extent))+ geom_boxplot(fill='yellow')
+
+
+#histogram
+
+ggplot(Bumpus_sparrows, aes(L_beak_head))+geom_histogram(aes(fill = after_stat(count)))
+
+ggplot(Bumpus_sparrows, aes(L_keel_sternum))+geom_histogram(aes(fill = after_stat(count)))
+
+
+
+
+
+library(scatterplot3d)
+s3d <- scatterplot3d(Alar_extent,Total_length,L_beak_head,pch=c(1,16)[as.numeric(Survivorship)],xlab="Alar extent", ylab="", angle=45,zlab="Length of beak and head", lty.hide=2,type="h",y.margin.add=0.1,font.axis=2,font.lab=2)
+legend(s3d$xyz.convert(238, 160, 34.1),c("Non-survivor","Survivor"),pch=c(1,16),text.font=2)
+
+# Scatter Plot Matrix
+library(car)
+scatterplotMatrix(~Total_length+Alar_extent+L_beak_head+L_humerous+L_keel_sternum | Survivorship, data=sparr.birds, var.labels=labs.diagonal,cex.labels=0.9, diagonal="boxplot",smooth=TRUE,reg.line=FALSE,pch=c(1,16),col=rep("black",2), legend.plot=FALSE)
+
+
