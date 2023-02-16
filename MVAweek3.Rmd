@@ -5,23 +5,31 @@ strboxplot(sparrows[,2:6])
 stars(sparrows,labels = sparrows$Survivorship)
 
 
-#ggplot 
+# Create ggplot visualizations
+ggplot(Bumpus_sparrows, aes(x = Total_length, y = L_keel_sternum, color = Survivorship)) + geom_point() + 
+  ggtitle("Total length vs. Keel sternum length")
+
+ggplot(Bumpus_sparrows, aes(x = Alar_extent, y = L_keel_sternum, color = Survivorship)) + geom_point() + 
+  ggtitle("Alar extent vs. Keel sternum length")
+
+ggplot(Bumpus_sparrows, aes(x = L_beak_head, y = L_keel_sternum, color = Survivorship)) + geom_point() + 
+  ggtitle("Beak head length vs. Keel sternum length")
+
+ggplot(Bumpus_sparrows, aes(x = L_humerous, y = L_keel_sternum, color = Survivorship)) + geom_point() + 
+  ggtitle("Humerous length vs. Keel sternum length")
 
 ggplot(Bumpus_sparrows, aes(x=Total_length,y=L_beak_head,color= Survivorship)) + geom_point()
+
 ggplot(Bumpus_sparrows, aes(x=Alar_extent,y=L_beak_head,color= Survivorship)) + geom_point()
 
 # box plot
 ggplot(Bumpus_sparrows, aes(x=Survivorship,y=Total_length))+ geom_boxplot(fill='blue')
-ggplot(Bumpus_sparrows, aes(x=Survivorship,y=Alar_extent))+ geom_boxplot(fill='yellow')
+ggplot(Bumpus_sparrows, aes(x=Survivorship,y=Alar_extent))+ geom_boxplot(fill='blue')
 
 
-#histogram
-
-ggplot(Bumpus_sparrows, aes(L_beak_head))+geom_histogram(aes(fill = after_stat(count)))
-
-ggplot(Bumpus_sparrows, aes(L_keel_sternum))+geom_histogram(aes(fill = after_stat(count)))
-
-
+# Create scatter plot matrix
+labs.diagonal <- c("Total length", "Alar extent", "Beak head length", "Humerous length", "Keel sternum length")
+scatterplotMatrix(~Total_length + Alar_extent + L_beak_head + L_humerous + L_keel_sternum | Survivorship, data = sparr.birds, var.labels = labs.diagonal, cex.labels = 0.9, diagonal = "boxplot", smooth = TRUE, reg.line = FALSE, pch = c(1, 16), col = rep("black", 2), legend.plot = FALSE)
 
 
 
@@ -29,8 +37,10 @@ library(scatterplot3d)
 s3d <- scatterplot3d(Alar_extent,Total_length,L_beak_head,pch=c(1,16)[as.numeric(Survivorship)],xlab="Alar extent", ylab="", angle=45,zlab="Length of beak and head", lty.hide=2,type="h",y.margin.add=0.1,font.axis=2,font.lab=2)
 legend(s3d$xyz.convert(238, 160, 34.1),c("Non-survivor","Survivor"),pch=c(1,16),text.font=2)
 
-# Scatter Plot Matrix
-library(car)
-scatterplotMatrix(~Total_length+Alar_extent+L_beak_head+L_humerous+L_keel_sternum | Survivorship, data=sparr.birds, var.labels=labs.diagonal,cex.labels=0.9, diagonal="boxplot",smooth=TRUE,reg.line=FALSE,pch=c(1,16),col=rep("black",2), legend.plot=FALSE)
-
-
+'''
+ By examining the scatter plot matrix and the ggplot visualizations, we can start to determine which attributes are associated with survival. 
+ For example, we can see from the scatter plot matrix and the ggplot visualizations that sparrows with longer keel sternum lengths tended to survive, 
+ while sparrows with shorter keel sternum lengths tended not to survive. 
+ We can further investigate this trend by conducting statistical analyses or modeling 
+ to better understand the relationship between keel sternum length and survival.
+'''
