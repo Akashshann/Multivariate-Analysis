@@ -1,0 +1,157 @@
+# Load data
+df <- read.csv("/Users/akashshanmugam/Documents/MVA/HW3/hr_data.csv")
+
+head(df)
+
+tail(df)
+dim(df)
+colnames(df)
+sum(is.na(df))
+sum(duplicated(df))
+
+df <- distinct(df)
+dim(df)
+str(df)
+
+## Exploratory Data Analysis
+
+### Monthly Hours
+
+df$average_montly_hours %>% unique() %>% length()
+ggplot(data = df, aes(x = average_montly_hours)) +
+  geom_histogram(binwidth = 10, color = "black", fill = "lightblue") +
+  labs(title = "Monthly Working Hours Distribution") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+### Number Of Projects
+
+df %>% count(number_project) %>% 
+  ggplot(aes(x = factor(number_project), y = n, fill = factor(number_project))) +
+  geom_bar(stat = "identity") +
+  labs(title = "Number of Projects Undertaken Rate") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+### Promotion Made In The Last 5 Years
+
+df %>% count(promotion_last_5years) %>%
+  mutate(promotion_last_5years = if_else(promotion_last_5years == 1, "Promoted", "Not Promoted")) %>%
+  ggplot(aes(x = "", y = n, fill = promotion_last_5years)) +
+  geom_bar(stat = "identity", width = 1) +
+  labs(title = "Promotion In The Last Five Years") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_manual(values = c("green", "red"), guide = FALSE) +
+  coord_polar(theta = "y")
+
+### Work Accidents
+
+df %>% count(Work_accident) %>%
+  mutate(Work_accident = if_else(Work_accident == 1, "Work Accident", "No Work Accident")) %>%
+  ggplot(aes(x = "", y = n, fill = Work_accident)) +
+  geom_bar(stat = "identity", width = 1) +
+  labs(title = "Work Accident") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_manual(values = c("green", "red"), guide = FALSE) +
+  coord_polar(theta = "y")
+
+### Time Spent In Company
+
+df %>% count(time_spend_company) %>%
+  ggplot(aes(x = factor(time_spend_company), y = n, fill = factor(time_spend_company))) +
+  geom_bar(stat = "identity") +
+  labs(title = "Number Of Years Spent Working In Company") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+mean(df$time_spend_company)
+
+### Department Comparison
+df %>% count(sales) %>%
+  ggplot(aes(x = sales, y = n, fill = sales)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Number Of Employees Per Department") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  coord_flip()
+
+df %>% count(salary) %>%
+  ggplot(aes(x = "", y = n, fill = salary)) +
+  geom_bar(stat = "identity", width = 1) +
+  labs(title = "Salary Category") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_manual(values
+
+#Data Preprocessing
+
+
+names(df)[names(df) == "sales"] <- "department"
+names(df)[names(df) == "salary_level"] <- "salary_level"
+
+categorical_cols <- c("department", "salary_level")
+encoded_cols <- model.matrix(~.-1, data = df[,categorical_cols])
+
+df <- cbind(df, encoded_cols)
+
+df <- df[,!(names(df) %in% categorical_cols)]
+
+#MIN MAX Scaling
+min_hours <- min(df$average_montly_hours)
+max_hours <- max(df$average_montly_hours)
+
+df$average_montly_hours <- (df$average_montly_hours - min_hours)/(max_hours - min_hours)
+
+#Split Data Into Train and Test
+set.seed(123)
+train_size <- 0.8
+train_indices <- sample(seq_len(nrow(df)), floor(train_size*nrow(df)))
+
+X_train <- df[train_indices, !(names(df) %in% "left")]
+y_train <- df[train_indices, "left"]
+
+X_test <- df[-train_indices, !(names(df) %in% "left")]
+y_test <- df[-train_indices, "left"]
+
+#Train Model
+
+#Logistic Regression Model
+
+
+logReg <- train(X_train, y_train, method = "glm", family = "binomial")
+
+logReg_predictions <- predict(logReg, X_test, type = "raw")
+
+print(confusionMatrix(logReg_predictions, y_test))
+
+print(summary(logReg))
+
+# Correlation matrix
+cor(employee_data[,num_cols])
+
+# Principal Component Analysis
+# Create dummy variables for categorical variables
+employee_data_dummy <- employee_data %>%
+  select(-c("sales", "left")) %>%
+  mutate(salary = factor(salary, levels = c("low", "medium", "high"))) %>%
+  dummyVars() %>%
+  predict(employee_data)
+
+# Standardize the numerical variables
+employee_data_std <- employee_data_dummy %>%
+  select(num_cols) %>%
+  scale()
+
+# Perform PCA
+pca <- prcomp(employee_data_std, center = TRUE, scale. = TRUE)
+
+# Scree plot to determine the number of principal components
+scree <- data.frame(Principal_Component = 1:length(pca$sdev), Standard_Deviation = pca$sdev^2/sum(pca$sdev^2))
+ggplot(scree, aes(x = Principal_Component, y = Standard_Deviation)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  scale_y_continuous(expand = c(0, 0)) +
+  xlab("Principal Component") +
+  ylab("Variance Explained")
+
+# Biplot of the first two principal components
+loadings <- pca$rotation[, 1:2]
+biplot(pca, choices = 1:2)
+
+
+
+
